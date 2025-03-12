@@ -1,5 +1,5 @@
 import { Flight, FlightResponse } from '../domain/types';
-import { cleanText, parseDuration, extractLogoUrl } from './scraper.utils';
+import { cleanText, parseDuration, extractLogoUrl, formatTime } from './scraper.utils';
 
 export class ScraperService {
   private static readonly USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
