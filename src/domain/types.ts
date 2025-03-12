@@ -6,12 +6,19 @@ export interface Airport {
 }
 
 export interface Flight {
-  departureAirport: Airport;
-  arrivalAirport: Airport;
+  // Flattened structure with non-nested properties
+  origin_iata: string;
+  destination_iata: string;
+  origin_name: string;
+  destination_name: string;
+  departure_time: string;
+  arrival_time: string;
+  departure_date: string;
+  arrival_date: string;
   duration: number;
-  airline: string;
-  airlineLogo: string;
-  flightNumber: string;
+  company: string;
+  company_logo: string;
+  flight: string;
 }
 
 export interface FlightResponse {

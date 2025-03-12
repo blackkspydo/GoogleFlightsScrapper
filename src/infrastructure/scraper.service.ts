@@ -1,4 +1,4 @@
-import { Airport, Flight, FlightResponse } from '../domain/types';
+import { Flight, FlightResponse } from '../domain/types';
 import { cleanText, parseDuration, extractLogoUrl } from './scraper.utils';
 
 export class ScraperService {
@@ -60,22 +60,18 @@ export class ScraperService {
 
   private static createEmptyFlight(): Flight {
     return {
-      departureAirport: {
-        name: '',
-        id: '',
-        time: '',
-        timeDate: new Date()
-      },
-      arrivalAirport: {
-        name: '',
-        id: '',
-        time: '',
-        timeDate: new Date()
-      },
+      origin_iata: '',
+      destination_iata: '',
+      origin_name: '',
+      destination_name: '',
+      departure_time: '',
+      arrival_time: '',
+      departure_date: '',
+      arrival_date: '',
       duration: 0,
-      airline: '',
-      airlineLogo: '',
-      flightNumber: ''
+      company: '',
+      company_logo: '',
+      flight: ''
     };
   }
 
@@ -101,6 +97,12 @@ export class ScraperService {
 
     const uniqueFlights = new Map<string, Flight>();
     let currentFlight = this.createEmptyFlight();
+    // Set the date fields
+    currentFlight.departure_date = flightDate;
+    currentFlight.arrival_date = flightDate;
+    // Set the IATA codes
+    currentFlight.origin_iata = origin;
+    currentFlight.destination_iata = destination;
 
     try {
       const htmlResponse = await this.fetchHtml(url);
@@ -115,8 +117,7 @@ export class ScraperService {
                 if (part.startsWith('Leaves ')) {
                   const idx = part.indexOf(' at ');
                   if (idx !== -1) {
-                    currentFlight.departureAirport.name = part.substring(7, idx);
-                    currentFlight.departureAirport.id = origin;
+                    currentFlight.origin_name = part.substring(7, idx);
                   }
                 }
                 if (part.includes('arrives at ')) {
@@ -125,8 +126,7 @@ export class ScraperService {
                     const rest = part.substring(idx + 10);
                     const endIdx = rest.indexOf(' at ');
                     if (endIdx !== -1) {
-                      currentFlight.arrivalAirport.name = rest.substring(0, endIdx);
-                      currentFlight.arrivalAirport.id = destination;
+                      currentFlight.destination_name = rest.substring(0, endIdx);
                     }
                   }
                 }
@@ -139,9 +139,7 @@ export class ScraperService {
             const label = element.getAttribute('aria-label');
             if (label) {
               let time = cleanText(label.replace('Departure time: ', '').replace('.', ''));
-              const timeStr = `${flightDate} ${time}`;
-              currentFlight.departureAirport.time = timeStr;
-              currentFlight.departureAirport.timeDate = new Date(timeStr);
+              currentFlight.departure_time = time;
             }
           }
         })
@@ -150,9 +148,7 @@ export class ScraperService {
             const label = element.getAttribute('aria-label');
             if (label) {
               let time = cleanText(label.replace('Arrival time: ', '').replace('.', ''));
-              const timeStr = `${flightDate} ${time}`;
-              currentFlight.arrivalAirport.time = timeStr;
-              currentFlight.arrivalAirport.timeDate = new Date(timeStr);
+              currentFlight.arrival_time = time;
             }
           }
         })
@@ -187,7 +183,7 @@ export class ScraperService {
             if (style) {
               const logoUrl = extractLogoUrl(style);
               if (logoUrl) {
-                currentFlight.airlineLogo = logoUrl;
+                currentFlight.company_logo = logoUrl;
                 response.airlineLogo = logoUrl;
               }
             }
@@ -196,7 +192,7 @@ export class ScraperService {
         .on('div.Ir0Voe .sSHqwe', {
           text(text) {
             if (text.text) {
-              currentFlight.airline = text.text.trim();
+              currentFlight.company = text.text.trim();
             }
           }
         })
@@ -206,19 +202,24 @@ export class ScraperService {
             if (url) {
               const parts = url.split('-');
               if (parts.length > 3) {
-                currentFlight.flightNumber = `${parts[2]} ${parts[3]}`;
+                currentFlight.flight = `${parts[2]} ${parts[3]}`;
               }
               response.bookingToken = url;
 
               // Store flight if we have all required data
-              if (currentFlight.departureAirport.time && 
-                  currentFlight.arrivalAirport.time && 
+              if (currentFlight.departure_time && 
+                  currentFlight.arrival_time && 
                   currentFlight.duration > 0) {
                 // Store flight in unique flights map
-                const key = `${currentFlight.flightNumber}-${currentFlight.departureAirport.time}`;
+                const key = `${currentFlight.flight}-${currentFlight.departure_time}`;
                 uniqueFlights.set(key, { ...currentFlight });
                 // Reset for next flight
                 currentFlight = ScraperService.createEmptyFlight();
+                // Set the date fields and IATA codes for the next flight
+                currentFlight.departure_date = flightDate;
+                currentFlight.arrival_date = flightDate;
+                currentFlight.origin_iata = origin;
+                currentFlight.destination_iata = destination;
               }
             }
           }
@@ -229,7 +230,11 @@ export class ScraperService {
 
       // Convert unique flights map to array and sort by departure time
       response.flights = Array.from(uniqueFlights.values())
-        .sort((a, b) => a.departureAirport.timeDate.getTime() - b.departureAirport.timeDate.getTime());
+        .sort((a, b) => {
+          const aTime = `${a.departure_date} ${a.departure_time}`;
+          const bTime = `${b.departure_date} ${b.departure_time}`;
+          return new Date(aTime).getTime() - new Date(bTime).getTime();
+        });
 
       console.log(`Found ${response.flights.length} flights`);
       console.log(`Lowest price: €${response.price}, Total duration: ${response.totalDuration} minutes`);
