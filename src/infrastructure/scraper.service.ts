@@ -139,6 +139,11 @@ export class ScraperService {
             const label = element.getAttribute('aria-label');
             if (label) {
               let time = cleanText(label.replace('Departure time: ', '').replace('.', ''));
+              // Convert to 24-hour format if in AM/PM format
+              if (time.includes('AM') || time.includes('PM')) {
+                const date = new Date(`1/1/2023 ${time}`);
+                time = formatTime(date);
+              }
               currentFlight.departure_time = time;
             }
           }
@@ -148,6 +153,11 @@ export class ScraperService {
             const label = element.getAttribute('aria-label');
             if (label) {
               let time = cleanText(label.replace('Arrival time: ', '').replace('.', ''));
+              // Convert to 24-hour format if in AM/PM format
+              if (time.includes('AM') || time.includes('PM')) {
+                const date = new Date(`1/1/2023 ${time}`);
+                time = formatTime(date);
+              }
               currentFlight.arrival_time = time;
             }
           }
