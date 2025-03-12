@@ -126,7 +126,7 @@ export class ScraperService {
                     const rest = part.substring(idx + 10);
                     const endIdx = rest.indexOf(' at ');
                     if (endIdx !== -1) {
-                      currentFlight.destination_name = rest.substring(0, endIdx);
+                      currentFlight.destination_name = rest.substring(0, endIdx)?.trim();
                     }
                   }
                 }
