@@ -7,6 +7,7 @@ export interface Airport {
 
 export interface Flight {
   // Flattened structure with non-nested properties
+  flight_id: string; // Unique identifier for each flight
   origin_iata: string;
   destination_iata: string;
   origin_name: string;

@@ -1,5 +1,6 @@
 import { Flight, FlightResponse } from '../domain/types';
 import { cleanText, parseDuration, extractLogoUrl, formatTime } from './scraper.utils';
+import { v4 as uuidv4 } from 'uuid';
 
 export class ScraperService {
   private static readonly USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
@@ -60,6 +61,7 @@ export class ScraperService {
 
   private static createEmptyFlight(): Flight {
     return {
+      flight_id: uuidv4(),
       origin_iata: '',
       destination_iata: '',
       origin_name: '',
