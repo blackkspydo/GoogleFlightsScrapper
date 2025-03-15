@@ -67,9 +67,9 @@ export class ScraperService {
       origin_name: '',
       destination_name: '',
       departure_time: '',
-      arrival_time: '',
-      departure_date: '',
       arrival: '',
+      departure_date: '',
+      arrival_date: '',
       duration: 0,
       company: '',
       company_logo: '',
@@ -101,7 +101,7 @@ export class ScraperService {
     let currentFlight = this.createEmptyFlight();
     // Set the date fields
     currentFlight.departure_date = flightDate;
-    currentFlight.arrival = flightDate;
+    currentFlight.arrival_date = flightDate;
     // Set the IATA codes
     currentFlight.origin_iata = origin;
     currentFlight.destination_iata = destination;
@@ -160,7 +160,7 @@ export class ScraperService {
                 const date = new Date(`1/1/2023 ${time}`);
                 time = formatTime(date);
               }
-              currentFlight.arrival_time = time;
+              currentFlight.arrival = time;
             }
           }
         })
@@ -220,7 +220,7 @@ export class ScraperService {
 
               // Store flight if we have all required data
               if (currentFlight.departure_time && 
-                  currentFlight.arrival_time && 
+                  currentFlight.arrival && 
                   currentFlight.duration > 0) {
                 // Store flight in unique flights map
                 const key = `${currentFlight.flight}-${currentFlight.departure_time}`;
@@ -229,7 +229,7 @@ export class ScraperService {
                 currentFlight = ScraperService.createEmptyFlight();
                 // Set the date fields and IATA codes for the next flight
                 currentFlight.departure_date = flightDate;
-                currentFlight.arrival = flightDate;
+                currentFlight.arrival_date = flightDate;
                 currentFlight.origin_iata = origin;
                 currentFlight.destination_iata = destination;
               }
