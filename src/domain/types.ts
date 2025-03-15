@@ -12,7 +12,7 @@ export interface Flight {
   destination_iata: string;
   origin_name: string;
   destination_name: string;
-  departure_time: string;
+  departure: string;
   arrival: string;
   departure_date: string;
   arrival_date: string;

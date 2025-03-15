@@ -66,7 +66,7 @@ export class ScraperService {
       destination_iata: '',
       origin_name: '',
       destination_name: '',
-      departure_time: '',
+      departure: '',
       arrival: '',
       departure_date: '',
       arrival_date: '',
@@ -146,7 +146,7 @@ export class ScraperService {
                 const date = new Date(`1/1/2023 ${time}`);
                 time = formatTime(date);
               }
-              currentFlight.departure_time = time;
+              currentFlight.departure = time;
             }
           }
         })
@@ -219,11 +219,11 @@ export class ScraperService {
               response.bookingToken = url;
 
               // Store flight if we have all required data
-              if (currentFlight.departure_time && 
+              if (currentFlight.departure && 
                   currentFlight.arrival && 
                   currentFlight.duration > 0) {
                 // Store flight in unique flights map
-                const key = `${currentFlight.flight}-${currentFlight.departure_time}`;
+                const key = `${currentFlight.flight}-${currentFlight.departure}`;
                 uniqueFlights.set(key, { ...currentFlight });
                 // Reset for next flight
                 currentFlight = ScraperService.createEmptyFlight();
@@ -243,8 +243,8 @@ export class ScraperService {
       // Convert unique flights map to array and sort by departure time
       response.flights = Array.from(uniqueFlights.values())
         .sort((a, b) => {
-          const aTime = `${a.departure_date} ${a.departure_time}`;
-          const bTime = `${b.departure_date} ${b.departure_time}`;
+          const aTime = `${a.departure_date} ${a.departure}`;
+          const bTime = `${b.departure_date} ${b.departure}`;
           return new Date(aTime).getTime() - new Date(bTime).getTime();
         });
 
