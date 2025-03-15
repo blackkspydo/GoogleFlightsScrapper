@@ -69,7 +69,7 @@ export class ScraperService {
       departure_time: '',
       arrival_time: '',
       departure_date: '',
-      arrival_date: '',
+      arrival: '',
       duration: 0,
       company: '',
       company_logo: '',
@@ -101,7 +101,7 @@ export class ScraperService {
     let currentFlight = this.createEmptyFlight();
     // Set the date fields
     currentFlight.departure_date = flightDate;
-    currentFlight.arrival_date = flightDate;
+    currentFlight.arrival = flightDate;
     // Set the IATA codes
     currentFlight.origin_iata = origin;
     currentFlight.destination_iata = destination;
@@ -229,7 +229,7 @@ export class ScraperService {
                 currentFlight = ScraperService.createEmptyFlight();
                 // Set the date fields and IATA codes for the next flight
                 currentFlight.departure_date = flightDate;
-                currentFlight.arrival_date = flightDate;
+                currentFlight.arrival = flightDate;
                 currentFlight.origin_iata = origin;
                 currentFlight.destination_iata = destination;
               }

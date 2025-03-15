@@ -15,7 +15,7 @@ export interface Flight {
   departure_time: string;
   arrival_time: string;
   departure_date: string;
-  arrival_date: string;
+  arrival: string;
   duration: number;
   company: string;
   company_logo: string;
